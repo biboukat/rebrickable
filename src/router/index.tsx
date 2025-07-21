@@ -1,13 +1,22 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
-import {HomeScreen} from '../screens/home';
-import {LoginScreen} from '../screens/login';
+import {LoginScreen} from '../screens/Login';
 import {observer} from 'mobx-react';
 import {useStore} from '../stores';
 import {SplashScreen} from '../screens/SplashScreen';
 import {useEffect} from 'react';
+import {Tabs} from './tabNavigator';
+import {MyAllSetList} from '../screens/MyAllSetList';
+import { MySetList } from '../screens/MySetList';
 
-const Stack = createNativeStackNavigator();
+export type RootStackParamList = {
+  Login: undefined;
+  Tabs: undefined;
+  MyAllSetListScreen: undefined;
+  MySetListScreen: {id: number};
+};
+const RootStackNavigator = createNativeStackNavigator<RootStackParamList>();
+
 export const RootStack = observer(() => {
   const {authStore} = useStore();
   useEffect(() => {
@@ -19,13 +28,29 @@ export const RootStack = observer(() => {
   }
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <RootStackNavigator.Navigator>
         {authStore.authToken.length > 0 ? (
-          <Stack.Screen name="Home" component={HomeScreen} />
+          <>
+            <RootStackNavigator.Screen
+              name="Tabs"
+              component={Tabs}
+              options={{headerShown: false}}
+            />
+            <RootStackNavigator.Screen
+              name="MyAllSetListScreen"
+              component={MyAllSetList}
+              options={{title: 'My Set Lists'}}
+            />
+            <RootStackNavigator.Screen
+              name="MySetListScreen"
+              component={MySetList}
+              options={{title: 'My Set List'}}
+            />
+          </>
         ) : (
-          <Stack.Screen name="Login" component={LoginScreen} />
+          <RootStackNavigator.Screen name="Login" component={LoginScreen} />
         )}
-      </Stack.Navigator>
+      </RootStackNavigator.Navigator>
     </NavigationContainer>
   );
 });

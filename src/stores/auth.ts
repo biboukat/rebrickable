@@ -3,7 +3,7 @@ import {api} from '../api';
 import {
   ASGetItem,
   ASKeys,
-  ASRemoveItem,
+  ASRemoveAll,
   ASSetItem,
 } from '../services/asyncStorage';
 import {IRootStore} from './types';
@@ -20,7 +20,11 @@ export class AuthStore {
   }
   *init() {
     const user_token = yield* flowResult(ASGetItem(ASKeys.authToken));
-    this.authToken = user_token ?? '';
+    if (user_token) {
+      yield this.rs.userStore.init();
+      this.authToken = user_token;
+      this.postLoginFetch();
+    }
     this.initLoading = false;
   }
   *login(username: string, password: string): Generator {
@@ -31,6 +35,7 @@ export class AuthStore {
       } = yield* flowResult(api.userToken(username, password));
       this.authToken = user_token;
       ASSetItem(ASKeys.authToken, user_token);
+      this.postLoginFetch();
     } catch (error: any) {
       console.error('bla auth store login', JSON.parse(error));
     } finally {
@@ -38,8 +43,12 @@ export class AuthStore {
     }
   }
 
+  postLoginFetch() {
+    this.rs.userStore.getProfile();
+  }
+
   logOut() {
     this.authToken = '';
-    ASRemoveItem(ASKeys.authToken);
+    ASRemoveAll();
   }
 }
