@@ -7,13 +7,15 @@ import {SplashScreen} from '../screens/SplashScreen';
 import {useEffect} from 'react';
 import {Tabs} from './tabNavigator';
 import {MyAllSetList} from '../screens/MyAllSetList';
-import { MySetList } from '../screens/MySetList';
+import {MySetList} from '../screens/MySetList';
+import {SetDetails} from '../screens/SetDetails';
 
 export type RootStackParamList = {
   Login: undefined;
   Tabs: undefined;
   MyAllSetListScreen: undefined;
-  MySetListScreen: {id: number};
+  MySetListScreen: {id: number; name: string};
+  SetDetailsScreen: {set_num: string; name: string};
 };
 const RootStackNavigator = createNativeStackNavigator<RootStackParamList>();
 
@@ -44,7 +46,12 @@ export const RootStack = observer(() => {
             <RootStackNavigator.Screen
               name="MySetListScreen"
               component={MySetList}
-              options={{title: 'My Set List'}}
+              options={p => ({title: p.route.params.name})}
+            />
+            <RootStackNavigator.Screen
+              name="SetDetailsScreen"
+              component={SetDetails}
+              options={p => ({title: p.route.params.name})}
             />
           </>
         ) : (

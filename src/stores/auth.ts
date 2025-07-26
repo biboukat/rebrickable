@@ -23,6 +23,7 @@ export class AuthStore {
     if (user_token) {
       yield this.rs.userStore.init();
       this.authToken = user_token;
+      api.setAuthToken(user_token);
       this.postLoginFetch();
     }
     this.initLoading = false;
@@ -35,6 +36,7 @@ export class AuthStore {
       } = yield* flowResult(api.userToken(username, password));
       this.authToken = user_token;
       ASSetItem(ASKeys.authToken, user_token);
+      api.setAuthToken(user_token);
       this.postLoginFetch();
     } catch (error: any) {
       console.error('bla auth store login', JSON.parse(error));

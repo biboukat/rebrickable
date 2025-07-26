@@ -12,7 +12,6 @@ type NavigationProps = NativeStackNavigationProp<
 >;
 type ItemProps = {userList: IUserSet; onItemPress: () => void};
 const Item = ({userList, onItemPress}: ItemProps) => {
-  // const onPress = () => {};
   return (
     <TouchableOpacity onPress={onItemPress}>
       <Text>{userList.name}</Text>
@@ -30,8 +29,8 @@ export const MyAllSetList = observer(() => {
   }, []);
 
   const navigation = useNavigation<NavigationProps>();
-  const navigateToMySetList = (id: number) => () => {
-    navigation.navigate('MySetListScreen', {id});
+  const navigateToMySetList = (id: number, name: string) => () => {
+    navigation.navigate('MySetListScreen', {id, name});
   };
 
   return (
@@ -41,7 +40,10 @@ export const MyAllSetList = observer(() => {
         onRefresh={getSetLists}
         data={userSets}
         renderItem={({item}) => (
-          <Item userList={item} onItemPress={navigateToMySetList(item.id)} />
+          <Item
+            userList={item}
+            onItemPress={navigateToMySetList(item.id, item.name)}
+          />
         )}
         keyExtractor={item => `${item.id}`}
       />

@@ -3,7 +3,12 @@ import {api} from '../api';
 import {IRootStore} from './types';
 import {flowResult} from './helpers';
 import {IUser} from '../api/types';
-import {ASGetItem, ASKeys, ASSetItem} from '../services/asyncStorage';
+import {
+  ASGetItem,
+  ASKeys,
+  ASRemoveAll,
+  ASSetItem,
+} from '../services/asyncStorage';
 
 export class UserStore {
   rs: IRootStore;
@@ -27,9 +32,7 @@ export class UserStore {
   *getProfile() {
     try {
       this.loading = true;
-      const {data} = yield* flowResult(
-        api.profile(this.rs.authStore.authToken),
-      );
+      const {data} = yield* flowResult(api.profile());
       ASSetItem(
         ASKeys.user,
         JSON.stringify({
@@ -47,5 +50,9 @@ export class UserStore {
     } finally {
       this.loading = false;
     }
+  }
+
+  *logOut() {
+    ASRemoveAll();
   }
 }
