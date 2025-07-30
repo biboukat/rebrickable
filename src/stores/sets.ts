@@ -9,6 +9,8 @@ export class SetsStore {
   getSetListLoading = false;
   getSetListByIdLoading = false;
   setDetailsLoading = false;
+  addSetToListLoading = false;
+  deleteSetFromListLoading = false;
   userSets: IUserSet[] = [];
   setListById: Map<number, ISetsListItem[]> = new Map();
   mocsBySetId: Map<string, {results: IMocDetails[]; count: number}> = new Map();
@@ -39,6 +41,31 @@ export class SetsStore {
       console.log('bla getSetList error', error);
     } finally {
       this.getSetListByIdLoading = false;
+    }
+  }
+  *addSetToList(listId: number, set_num: string) {
+    try {
+      this.addSetToListLoading = true;
+      const {data} = yield* flowResult(api.addSetToList(listId, set_num));
+      console.log('bla addSetToList data', data);
+      // this.setListById.set(listId, data.results.reverse());
+    } catch (error) {
+      console.log('bla addSetToList error', error);
+    } finally {
+      this.addSetToListLoading = false;
+    }
+  }
+  *deleteSetFromList(listId: number, set_num: string) {
+    try {
+      this.deleteSetFromListLoading = true;
+      const {data} = yield* flowResult(api.deleteSetFromList(listId, set_num));
+      this.getSetListById(listId);
+      console.log('bla deleteSetFromListLoading data', data);
+      // this.setListById.set(listId, data.results.reverse());
+    } catch (error) {
+      console.log('bla deleteSetFromListLoading error', error);
+    } finally {
+      this.deleteSetFromListLoading = false;
     }
   }
 

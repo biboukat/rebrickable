@@ -13,6 +13,10 @@ export class SearchStore {
     this.rs = rs;
     makeAutoObservable(this, {}, {autoBind: true});
   }
+  clearSearch() {
+    this.results = [];
+    this.count = 0;
+  }
   *search(search: string) {
     try {
       this.loading = true;

@@ -7,9 +7,22 @@ import {
 } from 'react-native';
 import {ISetDetails} from '../../api/types';
 import FastImage from 'react-native-fast-image';
+import {Loader} from '../Loader';
 
-type Props = {item: ISetDetails; onPress?: () => void};
-export const SetItem = ({item, onPress}: Props) => {
+type Props = {
+  item: ISetDetails;
+  onPress?: () => void;
+  flow?: 'set_list';
+  deleteSetFromList?: () => void;
+  loading?: boolean;
+};
+export const SetItem = ({
+  item,
+  onPress,
+  flow,
+  deleteSetFromList,
+  loading,
+}: Props) => {
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
       <FastImage
@@ -25,6 +38,12 @@ export const SetItem = ({item, onPress}: Props) => {
         <Text>{'|'}</Text>
         <Text style={styles.setNum}>{item.set_num}</Text>
       </View>
+      {flow === 'set_list' && (
+        <TouchableOpacity style={styles.deleteSet} onPress={deleteSetFromList}>
+          <Text>{'X'}</Text>
+        </TouchableOpacity>
+      )}
+      <Loader visible={loading} />
     </TouchableOpacity>
   );
 };
@@ -33,6 +52,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 4,
     padding: 4,
+    overflow: 'hidden',
   },
   name: {
     fontSize: 20,
@@ -41,7 +61,7 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     aspectRatio:
-      Dimensions.get('screen').height / Dimensions.get('screen').width, // Use your calculated aspect ratio
+      Dimensions.get('screen').height / Dimensions.get('screen').width,
   },
   row: {
     flexDirection: 'row',
@@ -49,5 +69,16 @@ const styles = StyleSheet.create({
   },
   setNum: {
     fontWeight: 500,
+  },
+  deleteSet: {
+    position: 'absolute',
+    right: 4,
+    top: 4,
+    backgroundColor: '#ff000094',
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 15,
   },
 });

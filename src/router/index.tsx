@@ -9,6 +9,8 @@ import {Tabs} from './tabNavigator';
 import {MyAllSetList} from '../screens/MyAllSetList';
 import {MySetList} from '../screens/MySetList';
 import {SetDetails} from '../screens/SetDetails';
+import {GeneralModal} from '../screens/GeneralModal';
+import {Button} from 'react-native';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -16,6 +18,9 @@ export type RootStackParamList = {
   MyAllSetListScreen: undefined;
   MySetListScreen: {id: number; name: string};
   SetDetailsScreen: {set_num: string; name: string};
+  GeneralModal: {
+    details: {flow: 'set_details_options'; set_num: string; name: string};
+  };
 };
 const RootStackNavigator = createNativeStackNavigator<RootStackParamList>();
 
@@ -51,8 +56,30 @@ export const RootStack = observer(() => {
             <RootStackNavigator.Screen
               name="SetDetailsScreen"
               component={SetDetails}
-              options={p => ({title: p.route.params.name})}
+              options={p => ({
+                title: p.route.params.name,
+                headerRight: () => (
+                  <Button
+                    onPress={() =>
+                      p.navigation.navigate('GeneralModal', {
+                        details: {
+                          flow: 'set_details_options',
+                          name: p.route.params.name,
+                          set_num: p.route.params.set_num,
+                        },
+                      })
+                    }
+                    title="..."
+                  />
+                ),
+              })}
             />
+            <RootStackNavigator.Group screenOptions={{presentation: 'modal'}}>
+              <RootStackNavigator.Screen
+                name="GeneralModal"
+                component={GeneralModal}
+              />
+            </RootStackNavigator.Group>
           </>
         ) : (
           <RootStackNavigator.Screen name="Login" component={LoginScreen} />

@@ -34,6 +34,11 @@ class Api {
       `users/${this.authToken}/setlists/${listId}/sets/`,
     );
   }
+  public async addSetToList(list_id: number, set_num: string) {
+    return instance.post(`users/${this.authToken}/setlists/${list_id}/sets/`, {
+      set_num,
+    });
+  }
 
   public async userToken(username: string, password: string) {
     return instance.post<{user_token: string}>(
@@ -48,11 +53,16 @@ class Api {
   }
   public async getAlternativeBuilds(set_num: string) {
     return instance.get<{results: IMocDetails[]; count: number}>(
-      `lego/sets/${set_num}/alternates/`,
+      `lego/sets/${set_num}/alternates/?ordering=-year`,
+    );
+  }
+  public async deleteSetFromList(list_id: number, set_num: string) {
+    return instance.delete(
+      `users/${this.authToken}/setlists/${list_id}/sets/${set_num}/`,
     );
   }
   public async search(search: string) {
-    return instance.get<{results: ISetDetails[], count: number}>(
+    return instance.get<{results: ISetDetails[]; count: number}>(
       `lego/sets/?search=${search}`,
     );
   }

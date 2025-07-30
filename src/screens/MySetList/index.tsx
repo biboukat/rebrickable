@@ -1,4 +1,4 @@
-import {StyleSheet, FlatList, View} from 'react-native';
+import {StyleSheet, FlatList, View, Alert} from 'react-native';
 import {RootStackParamList} from '../../router';
 import {useEffect} from 'react';
 import {useStore} from '../../stores';
@@ -18,7 +18,13 @@ type RouteProps = NativeStackScreenProps<RootStackParamList, 'MySetListScreen'>;
 export const MySetList = observer((props: RouteProps) => {
   const navigation = useNavigation<NavigationProps>();
   const {
-    setsStore: {getSetListById, getSetListByIdLoading, setListById},
+    setsStore: {
+      getSetListById,
+      getSetListByIdLoading,
+      setListById,
+      deleteSetFromList,
+      deleteSetFromListLoading,
+    },
   } = useStore();
   const getData = () => {
     if (props?.route?.params?.id) {
@@ -32,6 +38,22 @@ export const MySetList = observer((props: RouteProps) => {
   const setPress = (set_num: string, name: string) => () => {
     navigation.navigate('SetDetailsScreen', {set_num, name});
   };
+  const onDeleteSetFromList = (set_num: string, name: string) => () => {
+    onDeleteAlert(set_num, name);
+  };
+  const onDeleteAlert = (set_num: string, name: string) => {
+    Alert.alert('Are you sure', `You want to delete ${name} from set?`, [
+      {
+        text: 'Yes',
+        onPress: () => deleteSetFromList(props?.route?.params?.id, set_num),
+      },
+      {
+        text: 'Cancel',
+        onPress: () => {},
+        style: 'cancel',
+      },
+    ]);
+  };
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
       <FlatList
@@ -41,8 +63,14 @@ export const MySetList = observer((props: RouteProps) => {
         data={setListById.get(props?.route?.params?.id) || []}
         renderItem={({item}) => (
           <SetItem
+            flow="set_list"
             item={item.set}
             onPress={setPress(item.set.set_num, item.set.name)}
+            loading={deleteSetFromListLoading}
+            deleteSetFromList={onDeleteSetFromList(
+              item.set.set_num,
+              item.set.name,
+            )}
           />
         )}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
